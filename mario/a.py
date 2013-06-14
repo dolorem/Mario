@@ -1,7 +1,7 @@
+from CollisionDetection import CollisionDetection
 from UserInput import UserInput
 from direct.actor.Actor import Actor
 from direct.showbase.ShowBase import ShowBase
-from CollisionDetection import CollisionDetection
 
 class MyApp(ShowBase):
     def __init__(self):
@@ -12,9 +12,14 @@ class MyApp(ShowBase):
         self.pa = Actor("./animation.x", {"foobar": "./animation.x",})
         self.pa.setPos(0, 5, 0)
         self.pa.reparentTo(root)
-        self.pa.loop("foobar")
+        self.pa.loop("foobar");
+        print self.pa.node()
+        print self.camera.node()
         userInput = UserInput(self)
-        collisionDetection = CollisionDetection(self)
-            
+        collisionDetection = CollisionDetection()
+        #collisionDetection.initCollisionSphere(self.pa, True)
+        #collisionDetection.initCollisionSphere(self.camera, True, True)
+        collisionDetection.foobar(self.pa, self.camera, self)
+        
 app = MyApp()
 app.run()

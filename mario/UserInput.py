@@ -1,23 +1,24 @@
 import sys
-
+from panda3d.core import VBase3
+from math import sin, cos, pi
 class UserInput:
     def __init__(self, game):
         self.game = game
         self.jumping = False
         self.jumpHeight = 0
         game.disableMouse()
-        game.accept(".-repeat", self.move, [1.0, 0.0, 0.0])
-        game.accept(";-repeat", self.move, [-1.0, 0.0, 0.0])
-        game.accept(",-repeat", self.move, [0.0, 1.0, 0.0])
-        game.accept("o-repeat", self.move, [0.0, -1.0, 0.0])
-        game.accept(".", self.move, [1.0, 0.0, 0.0])
-        game.accept(";", self.move, [-1.0, 0.0, 0.0])
-        game.accept(",", self.move, [0.0, 1.0, 0.0])
-        game.accept("o", self.move, [0.0, -1.0, 0.0])
-        game.accept("a", self.rotate, [1])
-        game.accept("e", self.rotate, [-1])
-        game.accept("a-repeat", self.rotate, [1])
-        game.accept("e-repeat", self.rotate, [-1])
+        game.accept(".-repeat", self.move, [pi * 0.5])
+        game.accept(";-repeat", self.move, [pi * 1.5])
+        game.accept(",-repeat", self.move, [0.0])
+        game.accept("o-repeat", self.move, [pi])
+        game.accept(".", self.move, [pi * 0.5])
+        game.accept(";", self.move, [pi * 1.5])
+        game.accept(",", self.move, [0.0])
+        game.accept("o", self.move, [pi])
+        game.accept("a", self.rotate, [-pi / 180.0])
+        game.accept("e", self.rotate, [pi / 180.0])
+        game.accept("a-repeat", self.rotate, [-pi / 180.0])
+        game.accept("e-repeat", self.rotate, [pi / 180.0])
         game.accept("escape", sys.exit)
         game.accept("q", sys.exit)
         game.accept("space", self.jump)
@@ -52,9 +53,9 @@ class UserInput:
 
     def rotate(self, dangle):
         self.angle += dangle
-        self.game.camera.setHpr(self.angle, 0, 0)
-
-    def move(self, x, y, z):
-        self.game.camera.setX(self.game.camera.getX() + x)
-        self.game.camera.setY(self.game.camera.getY() + y)
-        self.game.camera.setZ(self.game.camera.getZ() + z)
+        camera = self.game.camera
+        camera.lookAt(sin(self.angle) + camera.getX(), cos(self.angle) + camera.getY(), 0)
+    
+    def move(self, deltaAngle):
+        self.game.camera.setX(self.game.camera.getX() + sin(self.angle + deltaAngle))
+        self.game.camera.setY(self.game.camera.getY() + cos(self.angle + deltaAngle))
