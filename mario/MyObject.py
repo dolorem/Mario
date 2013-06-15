@@ -11,15 +11,29 @@ class MyObject:
         self.minY = minY
         self.maxY = maxY
         self.model = model
-        print model        
+        
+    def avg(self, a, b):
+        return (a + b) / 2
             
-    '''Zwraca długość, szerokość i wysokość obiektu jako krotkę'''
+    '''Zwraca długość, szerokość, wysokość i środek obiektu jako krotkę'''
     def calculateDimension(self):
         p1, p2 = self.model.getTightBounds()
-        width = p2.getX() - p1.getX()
-        height = p2.getY() - p1.getY()
-        depth = p2.getZ() - p1.getZ()
-        return (width, height, depth)
+        width = abs(p2.getX() - p1.getX())
+        height = abs(p2.getY() - p1.getY())
+        depth = abs(p2.getZ() - p1.getZ())
+        center = Point3(self.avg(p1.getX(), p2.getX()), self.avg(p1.getY(), p2.getY()), self.avg(p1.getZ(), p2.getZ()))
+        return (width, height, depth, center) 
+    
+    def isColliding(self, obj2):
+        colliding = True
+        dimension1 = self.calculateDimension()
+        dimension2 = obj2.calculateDimension()
+        center1 = dimension1[3]
+        center2 = dimension2[3]
+        colliding = colliding and (abs(center1.getX() - center2.getX()) <= (dimension1[0] + dimension2[0]) / 2)
+        colliding = colliding and (abs(center1.getY() - center2.getY()) <= (dimension1[1] + dimension2[1]) / 2)
+        colliding = colliding and (abs(center1.getZ() - center2.getZ()) <= (dimension1[2] + dimension2[2]) / 2)
+        return colliding
         
     def setMinX(self, minX):
         self.minX = minX
@@ -64,8 +78,6 @@ class MyObject:
         return self.movementAnimation
     
     def getLastPosition(self):
-        print "LAST POSITION " + str(self.lastPosition)
-        print "LP " + str(self.lastPosition.getX()) + " " + str(self.lastPosition.getY()) + " " + str(self.lastPosition.getZ())
         return self.lastPosition
         
     def getModel(self):

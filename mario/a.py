@@ -4,6 +4,7 @@ from direct.actor.Actor import Actor
 from direct.showbase.ShowBase import ShowBase
 from panda3d.core import Point3
 from MyObject import MyObject
+from World import World
 
 class MyApp(ShowBase):
     def __init__(self):
@@ -15,8 +16,9 @@ class MyApp(ShowBase):
         self.pa.setPos(0, 5, 0)
         self.pa.reparentTo(root)
         self.pa.loop("foobar");
-        userInput = UserInput(self)
-        self.collisionDetection = CollisionDetection()
+        world = World()
+        userInput = UserInput(self, world)
+        self.collisionDetection = CollisionDetection(world)
         self.pb = loader.loadModel("./model.x")
         self.pb.reparentTo(root)
         self.pb.setPos(7, 5, 0)
