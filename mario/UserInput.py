@@ -7,25 +7,46 @@ class UserInput:
     def __init__(self, game, world):
         self.game = game
         self.world = world
-        self.jumping = False
+        self.jumping = False 
         self.jumpHeight = 0
+        self.keys = {";" : False, "," : False, "." : False, "a" : False, "o" : False, "e" : False}
         game.disableMouse()
-        game.accept(".-repeat", self.move, [pi * 0.5])
-        game.accept(";-repeat", self.move, [pi * 1.5])
-        game.accept(",-repeat", self.move, [0.0])
-        game.accept("o-repeat", self.move, [pi])
-        game.accept(".", self.move, [pi * 0.5])
-        game.accept(";", self.move, [pi * 1.5])
-        game.accept(",", self.move, [0.0])
-        game.accept("o", self.move, [pi])
-        game.accept("a", self.rotate, [-pi / 180.0])
-        game.accept("e", self.rotate, [pi / 180.0])
-        game.accept("a-repeat", self.rotate, [-pi / 180.0])
-        game.accept("e-repeat", self.rotate, [pi / 180.0])
-        game.accept("escape", sys.exit)
+        game.accept(";", self.keyHandler, [";", True])
+        game.accept(";-up", self.keyHandler, [";", False])
+        game.accept(",", self.keyHandler, [",", True])
+        game.accept(",-up", self.keyHandler, [",", False])
+        game.accept(".", self.keyHandler, [".", True])
+        game.accept(".-up", self.keyHandler, [".", False])
+        game.accept("a", self.keyHandler, ["a", True])
+        game.accept("a-up", self.keyHandler, ["a", False])
+        game.accept("o", self.keyHandler, ["o", True])
+        game.accept("o-up", self.keyHandler, ["o", False])
+        game.accept("e", self.keyHandler, ["e", True])
+        game.accept("e-up", self.keyHandler, ["e", False])
         game.accept("q", sys.exit)
-        game.accept("space", self.jump)
         self.angle = 0
+        taskMgr.add(self.userInput, "User Input")
+        
+    def keyHandler(self, key, value):
+        self.keys[key] = value    
+        
+    def userInput(self, task):
+        if self.keys[";"]:
+            self.move(pi * 1.5)
+        if self.keys[","]:
+            self.move(0.0)
+        if self.keys["."]:
+            self.move(pi * 0.5)
+        if self.keys["a"]:
+            self.rotate(-pi / 180.0)
+        if self.keys["o"]:
+            self.move(pi)
+        if self.keys["e"]:
+            self.rotate(pi / 180.0)
+        return task.cont
+    
+    def baaaz(self, key, value):
+        print str(key) + " " + str(value)
 
     def jump(self):
         self.lastTime = 0
