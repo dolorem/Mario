@@ -13,32 +13,13 @@ from sys import stdout
 class CollisionDetection():
 	def __init__(self):
 		self.collCount = 0
-		taskMgr.add(self.collisionDetection, "collision detection")
-		#fromObject = base.camera.attachNewNode(CollisionNode('colNode'))
-		#fromObject.node().addSolid(CollisionSphere(0, 0, 0, 1))
-		self.pusher = CollisionHandlerPusher()
-		
-		
+		self.dict = {}
+		#taskMgr.add(self.collisionDetection, "collision detection")
 	
-	def collisionDetection(self, task):
-		return task.cont
-	   
+	#def collisionDetection(self, task):
+	#	return task.cont
+	
 	def initCollisionSphere(self, obj, show=False, camera=False):
-		'''if camera:
-			center = obj.getPos()
-			radius = 2
-		else:
-			 bounds = obj.getChild(0).getBounds()
-			 center = bounds.getCenter()
-			 radius = bounds.getRadius()
-		collSphereStr = 'CollisionHull' + str(self.collCount) + "_" + obj.getName()
-		self.collCount += 1
-		cNode = CollisionNode(collSphereStr)
-		cNode.addSolid(CollisionBox(center, radius, radius, radius))
-		cNodepath = obj.attachNewNode(cNode)
-		if show:
-			cNodepath.show()
-		#return (cNodepath, collSphereStr)'''
 		if camera:
 			center = obj.getPos()
 			radius = 2
@@ -47,6 +28,7 @@ class CollisionDetection():
 			 center = bounds.getCenter()
 			 radius = bounds.getRadius()
 		collSphereStr = 'CollisionHull' + str(self.collCount) + "_" + obj.getName()
+		print collSphereStr
 		self.collCount += 1
 		cNode = CollisionNode(collSphereStr)
 		cNode.addSolid(CollisionSphere(center, radius))
@@ -54,8 +36,59 @@ class CollisionDetection():
 		if show:
 			cNodepath.show()
 		return (cNodepath, collSphereStr)
+		
+			  
+	def prepareCollisionSpheres(self, gameObjects, game):
+		self.gameObjects = gameObjects
+		base.cTrav = CollisionTraverser()
+		self.collHandEvent = CollisionHandlerEvent()
+		self.collHandEvent.addInPattern('into-%in')
+		self.collHandEvent.addOutPattern('outof-%in')
+		self.collCount = 0
+		for myObject in gameObjects:
+			sColl = self.initCollisionSphere(myObject.getModel(), True)
+			self.dict[sColl[1]] = myObject
+			base.cTrav.addCollider(sColl[0], self.collHandEvent)
+			game.accept('into-' + sColl[1], self.collideIn)
+			game.accept('outof-' + sColl[1], self.collideOut)
+			
+		
+	def collideIn(self, collEntry):
+		print("Object has collided into another object")
+		self.verifyCollision(collEntry)
+ 
+	def collideOut(self, collEntry):
+		pass
+	#	print("Object is no longer colliding with another object")
+	#	self.verifyCollision(collEntry)
+		
+	def baz(self, foo):
+		model = foo.getModel()
+		model.setX(foo.getLastPosition().getX())
+		model.setY(foo.getLastPosition().getY())
+		print "(" + str(model.getY()) + " -> " + str(foo.getLastPosition().getY()) + ")"
+		model.setZ(foo.getLastPosition().getZ())
+		
+	def verifyCollision(self, collEntry):
+		#print "From " + str(collEntry.getFromNodePath().node()) + " to " + str(collEntry.getIntoNodePath().node())
+		#print str(self.dict[str(collEntry.getFromNodePath().node()).split(" ")[1]])
+		print collEntry	
+		second = self.dict[str(collEntry.getFromNodePath().node()).split(" ")[1]]
+		first = self.dict[str(collEntry.getIntoNodePath().node()).split(" ")[1]]
+		#second.getModel().setPos(second.getLastPosition())
+		#first.getModel().setPos(first.getLastPosition())
+		#second.getModel().setX(3.6)
+		self.baz(first)
+		self.baz(second)
+		print "NEW POSITIONS - " + str(first.getModel().getPos()) + " " + str(second.getModel().getPos())
+		#print "MOVING TO " + str(first.getLastPosition())
+		#print second.getModel()
+		print "FIRST - " + str(first.getModel()) + " SECOND " + str(second.getModel())
+		
+		
+	def initCollisionPolygons(self, obj, show=False):
 		'''Poniższy kod tworzy CollisionPolygony dla obiektu. Szkoda, że wykrywanie kolizji w ten sposób nie jest zaimplementowane w silniku...'''
-		'''geomNodeCollection = obj.findAllMatches('**/+GeomNode')
+		geomNodeCollection = obj.findAllMatches('**/+GeomNode')
 		for nodePath in geomNodeCollection:
 			geomNode = nodePath.node()
 			collisionString = 'CollisionHull' + str(self.collCount) + "_" + obj.getName()
@@ -105,47 +138,4 @@ class CollisionDetection():
 			cNodepath = obj.attachNewNode(cNode)
 			if show:
 				cNodepath.show()
-			return (cNodepath, collisionString)'''
-			  
-	def foobar(self, s, t, game):
-	   base.cTrav = CollisionTraverser()
-	   self.collHandEvent = CollisionHandlerPusher()
-	   self.collHandEvent.addInPattern('into-%in')
-	   self.collHandEvent.addOutPattern('outof-%in')
-	   self.collCount = 0
-	   sColl = self.initCollisionSphere(s, True)
-	   base.cTrav.addCollider(sColl[0], self.collHandEvent)
-	   game.accept('into-' + sColl[1], self.collide3)
-	   game.accept('outof-' + sColl[1], self.collide4)
-	   print(sColl[1])
-	   tColl = self.initCollisionSphere(t, True)
-	   base.cTrav.addCollider(tColl[0], self.collHandEvent)
-	   game.accept('into-' + tColl[1], self.collide)
-	   game.accept('outof-' + tColl[1], self.collide2)
-	   print(tColl[1])
-	   print("WERT")
-	   pusher = self.pusher
-	   pusher.addCollider(sColl[0], s, base.drive.node())
-	   self.collHandEvent.addCollider(sColl[0], s, base.drive.node())
-	   self.collHandEvent.addCollider(tColl[0], t, base.drive.node())		
-		
-	def collide(self, collEntry):
-		print("WERT: object has collided into another object")
-		Sequence(Func(collEntry.getFromNodePath().getParent().setColor,
-					  VBase4(1, 0, 0, 1)),
-				 Wait(0.2),
-				 Func(collEntry.getFromNodePath().getParent().setColor,
-					  VBase4(0, 1, 0, 1)),
-				 Wait(0.2),
-				 Func(collEntry.getFromNodePath().getParent().setColor,
-					  VBase4(1, 1, 1, 1))).start()
- 
- 
-	def collide2(self, collEntry):
-		print("WERT.: object is no longer colliding with another object")
- 
-	def collide3(self, collEntry):
-		print("WERT2: object has collided into another object")
- 
-	def collide4(self, collEntry):
-		print("WERT2: object is no longer colliding with another object")
+			return (cNodepath, collisionString)

@@ -3,6 +3,7 @@ from UserInput import UserInput
 from direct.actor.Actor import Actor
 from direct.showbase.ShowBase import ShowBase
 from panda3d.core import Point3
+from MyObject import MyObject
 
 class MyApp(ShowBase):
     def __init__(self):
@@ -14,32 +15,15 @@ class MyApp(ShowBase):
         self.pa.setPos(0, 5, 0)
         self.pa.reparentTo(root)
         self.pa.loop("foobar");
-        print self.pa.node()
-        print self.camera.node()
         userInput = UserInput(self)
-        collisionDetection = CollisionDetection()
-        #collisionDetection.initCollisionSphere(self.pa, True)
-        #collisionDetection.initCollisionSphere(self.camera, True, True)
-        #collisionDetection.foobar(self.pa, self.camera, self)
+        self.collisionDetection = CollisionDetection()
         self.pb = loader.loadModel("./model.x")
         self.pb.reparentTo(root)
         self.pb.setPos(7, 5, 0)
-        #self.pb.posInterval(3.0, Point3(5, 5, 0)).start()
-        #self.pb.posInterval(3.0, Point3(0, 5, 0))
-        collisionDetection.foobar(self.pa, self.pb, self)
-        print self.pa
-        print "###############"
-        for i in self.pa.getChildren():
-            print i
-        print "###############"
-        for i in self.pa.findAllVertexColumns():
-            print i
-        print "###############"
-        geomNodeCollection = self.pa.findAllMatches('**/+GeomNode')
-        for nodePath in geomNodeCollection:
-            geomNode = nodePath.node()
-            for j in range(geomNode.getNumGeoms()):
-                print geomNode.getGeom(j).getBounds()
+        self.pbObject = MyObject(model=self.pb)
+        gameObjects = [MyObject(model=self.pa, lastPosition=self.pa.getPos()), MyObject(model=self.pb, lastPosition=self.pb.getPos())]
+        self.collisionDetection.prepareCollisionSpheres(gameObjects, self)
+        
         
 app = MyApp()
 app.run()

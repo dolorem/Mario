@@ -1,5 +1,5 @@
 import sys
-from panda3d.core import VBase3
+from panda3d.core import VBase3, Point3
 from math import sin, cos, pi
 class UserInput:
     def __init__(self, game):
@@ -57,8 +57,11 @@ class UserInput:
         camera.lookAt(sin(self.angle) + camera.getX(), cos(self.angle) + camera.getY(), 0)
     
     def move(self, deltaAngle):
-        print self.game.camera.getPos()
         self.game.camera.setX(self.game.camera.getX() + 0.2 * sin(self.angle + deltaAngle))
         self.game.camera.setY(self.game.camera.getY() + 0.2 * cos(self.angle + deltaAngle))
+        #self.game.pbObject.setLastPosition(self.game.pb.getPos())
+        self.game.collisionDetection.dict["CollisionHull1_"].setLastPosition(Point3(self.game.pb.getPos().getX(), self.game.pb.getPos().getY(), self.game.pb.getPos().getZ()))
+        #print "##" + str(self.game.pb.getPos())
+        
         self.game.pb.setX(self.game.pb.getX() - 0.2)
-        print self.game.camera.getPos()
+        
