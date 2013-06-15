@@ -1,8 +1,11 @@
+#coding: utf-8
+
 class World:
     def __init__(self, models=[], objects=[], sphereObjectDictionary={}):
-        self.models = models
-        self.objects = objects
-        self.sphereObjectDictionary = sphereObjectDictionary
+        self.models = models #lista wszystkich modeli
+        self.objects = objects #lista instancji klasy MyObject 
+        self.sphereObjectDictionary = sphereObjectDictionary #słownik w którym kluczami są nazwy sfer otaczających a wartościami instancje MyObject
+        # wymagane do odwzorowań pomiędzy sferą kolidującą a obiektem w nią wpisanym
     
     def getModels(self):
         return self.models

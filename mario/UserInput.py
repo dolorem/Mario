@@ -1,3 +1,4 @@
+#coding: utf-8
 import sys
 from panda3d.core import VBase3, Point3
 from math import sin, cos, pi
@@ -27,9 +28,11 @@ class UserInput:
         self.angle = 0
         taskMgr.add(self.userInput, "User Input")
         
+    '''Wywoływane gdy klawisz jest naciśnięty bądź puszczony, rejestruje to w słowniku klawiszy.'''
     def keyHandler(self, key, value):
         self.keys[key] = value    
         
+    '''Zadanie reagujące na zdarzenia klawiatury.'''
     def userInput(self, task):
         if self.keys[";"]:
             self.move(pi * 1.5)
@@ -44,9 +47,6 @@ class UserInput:
         if self.keys["e"]:
             self.rotate(pi / 180.0)
         return task.cont
-    
-    def baaaz(self, key, value):
-        print str(key) + " " + str(value)
 
     def jump(self):
         self.lastTime = 0
@@ -60,7 +60,7 @@ class UserInput:
         if self.jumpHeight >= 2.0:
             return True
         return False
-#TODO: zamienic move() na skakanie i poruszanie sie do gory, skakanie powoduje TypeError() - za duzo argumentow jest przekazywanych do move() 
+#TODO: zamienić move() na skakanie i poruszanie się do gory, skakanie powoduje TypeError() - za dużo argumentów jest przekazywanych do move() 
     def jumpTask(self, task):
         if not self.checkCollision():
             dh = task.time - self.lastTime
@@ -75,11 +75,14 @@ class UserInput:
         self.jumping = False
         return task.done
 
+    '''Obraca kamerę.'''
     def rotate(self, dangle):
         self.angle += dangle
         camera = self.game.camera
         camera.lookAt(sin(self.angle) + camera.getX(), cos(self.angle) + camera.getY(), 0)
     
+    '''Przesuwa kamerę.'''
+    #TODO: detekcja kolizji kamery z otoczeniem
     def move(self, deltaAngle):
         self.game.camera.setX(self.game.camera.getX() + 0.2 * sin(self.angle + deltaAngle))
         self.game.camera.setY(self.game.camera.getY() + 0.2 * cos(self.angle + deltaAngle))

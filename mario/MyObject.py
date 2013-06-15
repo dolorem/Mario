@@ -2,7 +2,7 @@
 from panda3d.core import Point3
 
 class MyObject:
-    def __init__(self, lastPosition=Point3(0,0,0), animated=False, movementAnimation=None,minX=0,maxX=0,minY=0,maxY=0,model=None):
+    def __init__(self, lastPosition = Point3(0, 0, 0), animated = False, movementAnimation = None, minX = 0, maxX = 0, minY = 0, maxY = 0, model = None):
         self.lastPosition = lastPosition
         self.animated = animated
         self.movementAnimation = movementAnimation
@@ -15,7 +15,7 @@ class MyObject:
     def avg(self, a, b):
         return (a + b) / 2
             
-    '''Zwraca długość, szerokość, wysokość i środek obiektu jako krotkę'''
+    '''Zwraca długość, szerokość, wysokość i środek obiektu jako krotkę.'''
     def calculateDimension(self):
         p1, p2 = self.model.getTightBounds()
         width = abs(p2.getX() - p1.getX())
@@ -24,6 +24,7 @@ class MyObject:
         center = Point3(self.avg(p1.getX(), p2.getX()), self.avg(p1.getY(), p2.getY()), self.avg(p1.getZ(), p2.getZ()))
         return (width, height, depth, center) 
     
+    '''Sprawdza kolizję bazując na prostopadłościanach otaczających.'''
     def isColliding(self, obj2):
         colliding = True
         dimension1 = self.calculateDimension()

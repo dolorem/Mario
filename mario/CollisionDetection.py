@@ -12,31 +12,30 @@ from sys import stdout
 
 class CollisionDetection():
 	def __init__(self, world):
-		self.world = world
-		self.taskEvents = set()
-		self.collCount = 0
+		self.world = world #Instancja klasy World
+		self.taskEvents = set() #zbiór zawierający krotki obiektów zakwalifikowanych jako możliwie kolidujące przez sfery otaczające
+		self.collCount = 0 #liczba utworzonych sfer otaczających, istotna dla zachowania unikatowej nazwy
 		taskMgr.add(self.collisionDetection, "collision detection")
 		
+	'''Usuwa ze zbioru możliwych kolizji krotkę zawierającą dwa obiekty, których sfery otaczające kolidują ze sobą.'''
 	def addCollidingObjects(self, obj1, obj2):
 		self.taskEvents.add((obj1, obj2))
 		
+	'''Dodaje do zbioru możliwych kolizji krotkę zawierającą dwa obiekty, których sfery otaczające kolidują ze sobą.'''
 	def removeCollidingObjects(self, obj1, obj2):
 		self.taskEvents.remove((obj1, obj2))
 	
+	'''Zadanie przeglądające wszystkie pary obiektów zakwalifikowane do sprawdzenia za pomocą prostopadłościanów przez sfery.'''
 	def collisionDetection(self, task):
-		#print len(self.taskEvents)
 		for event in self.taskEvents:
 			self.verifyCollision(event)
 		return task.cont
 	
-	def initCollisionSphere(self, obj, show=False, camera=False):
-		if camera:
-			center = obj.getPos()
-			radius = 2
-		else:
-			bounds = obj.getChild(0).getBounds()
-			center = bounds.getCenter()
-			radius = bounds.getRadius()
+	'''Inicjuje sferę otaczającą dla obiektu.'''
+	def initCollisionSphere(self, obj, show=False):
+		bounds = obj.getChild(0).getBounds()
+		center = bounds.getCenter()
+		radius = bounds.getRadius()
 		collSphereStr = 'CollisionHull' + str(self.collCount) + "_" + obj.getName()
 		self.collCount += 1
 		cNode = CollisionNode(collSphereStr)
@@ -46,6 +45,7 @@ class CollisionDetection():
 			cNodepath.show()
 		return (cNodepath, collSphereStr)
 		
+	'''Tworzy sfery otaczające dla każdego obiektu z zadanej tablicy gameObjects. I ustawie je w odpowiednim miejscu grafu. Dodaje relację sfera-obiekt w słowniku.'''	
 	def prepareCollisionSpheres(self, gameObjects, game):
 		self.gameObjects = gameObjects
 		base.cTrav = CollisionTraverser()
@@ -60,25 +60,29 @@ class CollisionDetection():
 			game.accept('into-' + sColl[1], self.collideIn)
 			game.accept('outof-' + sColl[1], self.collideOut)
 		
+	'''Wywoływane przez Pandę gdy obiekty zaczną kolidować, dodaje je do listy obiektów do sprawdzenia i ewentualnego przywrócenia.'''
 	def collideIn(self, collEntry):
 		first, second = self.world.getObjectsFromCollisionEntry(collEntry)
 		self.addCollidingObjects(first, second)
 
+	'''Wywoływane przez Pandę gdy obiekty przestaną kolidować, usuwa je z listy obiektów do sprawdzenia i ewentualnego przywrócenia.'''
 	def collideOut(self, collEntry):
 		first, second = self.world.getObjectsFromCollisionEntry(collEntry)
 		self.removeCollidingObjects(first, second)
 			
-	def baz(self, foo):
+	'''Cofa obiekt do poprzedniego położenia.'''
+	def revertPosition(self, foo):
 		model = foo.getModel()
 		model.setX(foo.getLastPosition().getX())
 		model.setY(foo.getLastPosition().getY())
 		model.setZ(foo.getLastPosition().getZ())
 		
+	'''Sprawdza czy kolizja rzeczywiście nastąpiła, jeśli tak, cofa obiekty do poprzedniego położenia.'''
 	def verifyCollision(self, collisionEvent):
 		obj1, obj2 = collisionEvent[0], collisionEvent[1]
 		if obj1.isColliding(obj2):
-			self.baz(obj1)
-			self.baz(obj2)
+			self.revertPosition(obj1)
+			self.revertPosition(obj2)
 				
 	def initCollisionPolygons(self, obj, show=False):
 		'''Poniższy kod tworzy CollisionPolygony dla obiektu. Szkoda, że wykrywanie kolizji w ten sposób nie jest zaimplementowane w silniku...'''
