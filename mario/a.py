@@ -6,7 +6,6 @@ from panda3d.core import Point3
 from MyObject import MyObject
 from World import World
 from Player import Player
-from CameraObject import CameraObject
 
 class MyApp(ShowBase):
     def __init__(self):
@@ -25,7 +24,10 @@ class MyApp(ShowBase):
         self.pb.reparentTo(root)
         self.pb.setPos(7, 5, 0)
         self.pbObject = MyObject(model=self.pb)
-        gameObjects = [MyObject(model=self.pa, lastPosition=self.pa.getPos()), MyObject(model=self.pb, lastPosition=self.pb.getPos()), Player(model=self.camera, lastPosition=self.camera.getPos())]
+        self.pc = loader.loadModel("./model.x")
+        self.pc.reparentTo(root)
+        self.pc.setPos(0, 0, -2)
+        gameObjects = [MyObject(model=self.pa, lastPosition=self.pa.getPos()), MyObject(model=self.pb, lastPosition=self.pb.getPos()), Player(model=self.camera, lastPosition=self.camera.getPos()), MyObject(model=self.pc, lastPosition=self.pc.getPos())]
         self.collisionDetection.prepareCollisionSpheres(gameObjects, self)
         
         

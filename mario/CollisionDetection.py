@@ -9,7 +9,7 @@ from panda3d.core import CollisionNode, CollisionSphere
 from panda3d.core import VBase4
 from panda3d.core import SocketStream, GeomVertexReader
 from sys import stdout
-from CameraObject import CameraObject
+from Player import Player
 
 class CollisionDetection():
 	def __init__(self, world):
@@ -17,6 +17,20 @@ class CollisionDetection():
 		self.taskEvents = set() #zbiór zawierający krotki obiektów zakwalifikowanych jako możliwie kolidujące przez sfery otaczające
 		self.collCount = 0 #liczba utworzonych sfer otaczających, istotna dla zachowania unikatowej nazwy
 		taskMgr.add(self.collisionDetection, "collision detection")
+		taskMgr.add(self.gravity, "gravity")
+		
+	def gravity(self, task):
+		found = False
+		player = self.world.getPlayer()
+		for item in self.taskEvents:
+			if (isinstance(item[0], Player) and item[1].isColliding(item[0])) or (isinstance(item[1], Player) and item[1].isColliding(item[0])):
+				found = True
+				break
+		if not found:
+			pos = self.world.getPlayer().getModel().getPos()
+			self.world.getPlayer().getModel().setPos(pos.getX(), pos.getY(), pos.getZ() - 0.05)			
+		return task.cont
+
 		
 	'''Usuwa ze zbioru możliwych kolizji krotkę zawierającą dwa obiekty, których sfery otaczające kolidują ze sobą.'''
 	def addCollidingObjects(self, obj1, obj2):
@@ -120,7 +134,7 @@ class CollisionDetection():
 		if obj1.isColliding(obj2):
 			self.revertPosition(obj1)
 			self.revertPosition(obj2)
-		elif isinstance(obj1, CameraObject) or isinstance(obj2, CameraObject):
+		elif isinstance(obj1, Player) or isinstance(obj2, Player):
 			self.revertPosition(obj1)
 			self.revertPosition(obj2)
 				
