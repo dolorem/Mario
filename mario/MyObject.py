@@ -25,15 +25,26 @@ class MyObject:
         return (width, height, depth, center) 
     
     '''Sprawdza kolizję bazując na prostopadłościanach otaczających.'''
-    def isColliding(self, obj2):
+    def isColliding(self, obj2, camera = False):
+        #print (self, obj2)
         colliding = True
         dimension1 = self.calculateDimension()
         dimension2 = obj2.calculateDimension()
         center1 = dimension1[3]
         center2 = dimension2[3]
+        #print (dimension1, dimension2)
         colliding = colliding and (abs(center1.getX() - center2.getX()) <= (dimension1[0] + dimension2[0]) / 2)
         colliding = colliding and (abs(center1.getY() - center2.getY()) <= (dimension1[1] + dimension2[1]) / 2)
         colliding = colliding and (abs(center1.getZ() - center2.getZ()) <= (dimension1[2] + dimension2[2]) / 2)
+        return colliding
+        
+    def isCollidingWithCamera(self, cameraPosition, width, height, depth):
+        colliding = True
+        dimension1 = self.calculateDimension()
+        center1 = dimension1[3]
+        colliding = colliding and (abs(center1.getX() - cameraPosition.getX()) <= (dimension1[0] + width) / 2)
+        colliding = colliding and (abs(center1.getY() - cameraPosition.getY()) <= (dimension1[1] + height) / 2)
+        colliding = colliding and (abs(center1.getZ() - cameraPosition.getZ()) <= (dimension1[2] + depth) / 2)
         return colliding
         
     def setMinX(self, minX):

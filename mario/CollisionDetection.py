@@ -9,6 +9,7 @@ from panda3d.core import CollisionNode, CollisionSphere
 from panda3d.core import VBase4
 from panda3d.core import SocketStream, GeomVertexReader
 from sys import stdout
+from CameraObject import CameraObject
 
 class CollisionDetection():
 	def __init__(self, world):
@@ -27,23 +28,53 @@ class CollisionDetection():
 	
 	'''Zadanie przeglądające wszystkie pary obiektów zakwalifikowane do sprawdzenia za pomocą prostopadłościanów przez sfery.'''
 	def collisionDetection(self, task):
-		for event in self.taskEvents:
-			self.verifyCollision(event)
+		self.detectWorldWorldCollisions()
+		self.detectWorldPlayerCollisions()
 		return task.cont
 	
+	def detectWorldWorldCollisions(self):
+		for event in self.taskEvents:
+			self.verifyCollision(event)
+			
+	def detectWorldPlayerCollisions(self):
+		for object in self.world.getObjects():
+			self.verifyPlayerWorldCollision(object)
+			
+	def verifyPlayerWorldCollision(self, object):
+		#if object.isCollidingWithCamera(self.world.getCamera(), 4, 4, 4):
+		#	print "COLLIDING"
+		#	self.revertPosition(object)
+		#	self.world.getPlayer().reversePosition(self.world.getCamera(), object)
+		pass
+	
 	'''Inicjuje sferę otaczającą dla obiektu.'''
-	def initCollisionSphere(self, obj, show=False):
-		bounds = obj.getChild(0).getBounds()
-		center = bounds.getCenter()
-		radius = bounds.getRadius()
-		collSphereStr = 'CollisionHull' + str(self.collCount) + "_" + obj.getName()
-		self.collCount += 1
-		cNode = CollisionNode(collSphereStr)
-		cNode.addSolid(CollisionSphere(center, radius))
-		cNodepath = obj.attachNewNode(cNode)
-		if show:
-			cNodepath.show()
-		return (cNodepath, collSphereStr)
+	def initCollisionSphere(self, obj, show=False, myObject=None):
+		try:
+			bounds = obj.getChild(0).getBounds()
+			center = bounds.getCenter()
+			radius = bounds.getRadius()
+			collSphereStr = 'CollisionHull' + str(self.collCount) + "_" + obj.getName()
+			self.collCount += 1
+			cNode = CollisionNode(collSphereStr)
+			cNode.addSolid(CollisionSphere(center, radius))
+			cNodepath = obj.attachNewNode(cNode)
+			if show:
+				cNodepath.show()
+			return (cNodepath, collSphereStr)
+		except AssertionError:
+			center = obj.getPos()
+			radius = 1
+			collSphereStr = 'CollisionHull' + str(self.collCount) + "_" + obj.getName()
+			self.collCount += 1
+			cNode = CollisionNode(collSphereStr)
+			cs = CollisionSphere(center, radius)
+			myObject.cs = cs
+			#print cs
+			cNode.addSolid(cs)
+			cNodepath = obj.attachNewNode(cNode)
+			if show:
+				cNodepath.show()
+			return (cNodepath, collSphereStr)
 		
 	'''Tworzy sfery otaczające dla każdego obiektu z zadanej tablicy gameObjects. I ustawie je w odpowiednim miejscu grafu. Dodaje relację sfera-obiekt w słowniku.'''	
 	def prepareCollisionSpheres(self, gameObjects, game):
@@ -54,24 +85,30 @@ class CollisionDetection():
 		self.collHandEvent.addOutPattern('outof-%in')
 		self.collCount = 0
 		for myObject in gameObjects:
-			sColl = self.initCollisionSphere(myObject.getModel(), True)
+			sColl = self.initCollisionSphere(myObject.getModel(), True, myObject)
+			#print sColl 
 			self.world.getSphereObjectDictionary()[sColl[1]] = myObject
 			base.cTrav.addCollider(sColl[0], self.collHandEvent)
 			game.accept('into-' + sColl[1], self.collideIn)
 			game.accept('outof-' + sColl[1], self.collideOut)
-		
+		#print self.world.getSphereObjectDictionary()
+	
 	'''Wywoływane przez Pandę gdy obiekty zaczną kolidować, dodaje je do listy obiektów do sprawdzenia i ewentualnego przywrócenia.'''
 	def collideIn(self, collEntry):
+		print collEntry
 		first, second = self.world.getObjectsFromCollisionEntry(collEntry)
 		self.addCollidingObjects(first, second)
 
 	'''Wywoływane przez Pandę gdy obiekty przestaną kolidować, usuwa je z listy obiektów do sprawdzenia i ewentualnego przywrócenia.'''
 	def collideOut(self, collEntry):
+		print "OUT"
+		print collEntry
 		first, second = self.world.getObjectsFromCollisionEntry(collEntry)
 		self.removeCollidingObjects(first, second)
 			
 	'''Cofa obiekt do poprzedniego położenia.'''
 	def revertPosition(self, foo):
+		#print "REVERTING"
 		model = foo.getModel()
 		model.setX(foo.getLastPosition().getX())
 		model.setY(foo.getLastPosition().getY())
@@ -81,6 +118,9 @@ class CollisionDetection():
 	def verifyCollision(self, collisionEvent):
 		obj1, obj2 = collisionEvent[0], collisionEvent[1]
 		if obj1.isColliding(obj2):
+			self.revertPosition(obj1)
+			self.revertPosition(obj2)
+		elif isinstance(obj1, CameraObject) or isinstance(obj2, CameraObject):
 			self.revertPosition(obj1)
 			self.revertPosition(obj2)
 				
