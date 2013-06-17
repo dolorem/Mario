@@ -12,6 +12,9 @@ class MyObject:
         self.maxY = maxY
         self.model = model
         
+    def getPos(self):
+        return self.model.getPos()   
+        
     def avg(self, a, b):
         return (a + b) / 2
             
@@ -78,7 +81,7 @@ class MyObject:
         return self.maxX
     
     def getMinY(self):
-        return self.maxX
+        return self.minY
     
     def getMaxY(self):
         return self.maxY

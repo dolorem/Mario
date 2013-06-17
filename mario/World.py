@@ -10,6 +10,9 @@ class World:
         self.player = player
         self.camera= camera
         
+    def addAnimated(self, value):
+        self.animated.append(value)
+        
     def getCamera(self):
         return self.camera
     
@@ -18,7 +21,8 @@ class World:
     
     def getPlayer(self):
         #return self.player
-        return self.getSphereObjectDictionary()['CollisionHull2_camera']
+        #return self.getSphereObjectDictionary()['CollisionHull2_camera']
+        return self.getSphereObjectDictionary()['CollisionHull0_camera']
     
     def setPlayer(self, player):
         self.player = player

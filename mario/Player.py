@@ -15,6 +15,13 @@ class Player(MyObject):
         self.jumpTime = 0
         self.amountOfJumps = 0
         
+    def kill(self):
+        self.getModel().setPos(0, 0, 0)
+        self.lastPosition = Point3(0, 0, 0)
+        self.position = self.lastPosition
+        self.lifes -= 1
+        print "KILLED"
+        
     '''Metoda wywoływana po naciśnięciu spacji.'''
     def jump(self):
         if self.amountOfJumps >= 2:
@@ -36,7 +43,7 @@ class Player(MyObject):
         
     '''Zwraca długość, szerokość, wysokość i środek obiektu jako krotkę.'''
     def calculateDimension(self):
-        return (4, 4, 4, self.model.getPos()) 
+        return (2, 2, 2, self.model.getPos()) 
         
     '''Dodaje punkty graczowi.'''
     def addPoints(self, amount):

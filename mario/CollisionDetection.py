@@ -65,8 +65,8 @@ class CollisionDetection():
 	def initCollisionSphere(self, obj, show=False, myObject=None):
 		try:
 			show = False
-			if self.collCount == 2:
-				show = True
+			#if self.collCount == 2:
+			#	show = True
 			print obj.getName()
 			bounds = obj.getChild(0).getBounds()
 			center = bounds.getCenter()
@@ -126,7 +126,6 @@ class CollisionDetection():
 			
 	'''Cofa obiekt do poprzedniego położenia.'''
 	def revertPosition(self, foo):
-		#print "REVERTING"
 		model = foo.getModel()
 		model.setX(foo.getLastPosition().getX())
 		model.setY(foo.getLastPosition().getY())
@@ -136,9 +135,13 @@ class CollisionDetection():
 	def verifyCollision(self, collisionEvent):
 		obj1, obj2 = collisionEvent[0], collisionEvent[1]
 		if obj1.isColliding(obj2):
+			if isinstance(obj1, Player) and obj2.getAnimated():
+				self.world.getPlayer().kill()
 			self.revertPosition(obj1)
 			self.revertPosition(obj2)
 		elif isinstance(obj1, Player) or isinstance(obj2, Player):
+			if isinstance(obj1, Player) and obj2.getAnimated():
+				self.world.getPlayer().kill()
 			self.revertPosition(obj1)
 			self.revertPosition(obj2)
 				
