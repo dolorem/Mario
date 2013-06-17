@@ -64,6 +64,10 @@ class CollisionDetection():
 	'''Inicjuje sferę otaczającą dla obiektu.'''
 	def initCollisionSphere(self, obj, show=False, myObject=None):
 		try:
+			show = False
+			if self.collCount == 2:
+				show = True
+			print obj.getName()
 			bounds = obj.getChild(0).getBounds()
 			center = bounds.getCenter()
 			radius = bounds.getRadius()

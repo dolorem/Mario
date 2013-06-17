@@ -25,7 +25,6 @@ class Player(MyObject):
         
     '''Zadanie ruszające gracza do góry.''' 
     def jumpTask(self, task):
-        print "jumping"
         self.getModel().setZ(self.getModel().getZ() + 0.2)
         self.jumpTime += 1
         if (self.jumpTime > 10):
