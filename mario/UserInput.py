@@ -10,7 +10,7 @@ class UserInput:
         self.world = world
         self.jumping = False 
         self.jumpHeight = 0
-        self.keys = {";" : False, "," : False, "." : False, "a" : False, "o" : False, "e" : False}
+        self.keys = {";" : False, "," : False, "." : False, "a" : False, "o" : False, "e" : False, "page_up" : False, "page_down" : False}
         game.disableMouse()
         game.accept(";", self.keyHandler, [";", True])
         game.accept(";-up", self.keyHandler, [";", False])
@@ -24,8 +24,14 @@ class UserInput:
         game.accept("o-up", self.keyHandler, ["o", False])
         game.accept("e", self.keyHandler, ["e", True])
         game.accept("e-up", self.keyHandler, ["e", False])
+        game.accept("page_up", self.keyHandler, ["page_up", True])
+        game.accept("page_up-up", self.keyHandler, ["page_up", False])
+        game.accept("page_down", self.keyHandler, ["page_down", True])
+        game.accept("page_down-up", self.keyHandler, ["page_down", False])
         game.accept("q", sys.exit)
+        game.accept("space", self.jump)
         self.angle = 0
+        self.dangle = 0
         taskMgr.add(self.userInput, "User Input")
         
     '''Wywoływane gdy klawisz jest naciśnięty bądź puszczony, rejestruje to w słowniku klawiszy.'''
@@ -47,52 +53,28 @@ class UserInput:
             self.move(pi)
         if self.keys["e"]:
             self.rotate(pi / 180.0)
+        if self.keys["page_up"]:
+            self.rotateVertically(0.1)
+        if self.keys["page_down"]:
+            self.rotateVertically(-0.1)
         self.world.getPlayer().getModel().setPos(self.world.getCamera().getPos())
         return task.cont
 
     def jump(self):
-        self.lastTime = 0
-        self.jumpHeight = 0
-        if self.jumping:
-            return
-        self.jumping = True        
-        taskMgr.add(self.jumpTask, "Jump Task")
-
-    def checkCollision(self):
-        if self.jumpHeight >= 2.0:
-            return True
-        return False
-#TODO: zamienić move() na skakanie i poruszanie się do gory, skakanie powoduje TypeError() - za dużo argumentów jest przekazywanych do move() 
-    def jumpTask(self, task):
-        if not self.checkCollision():
-            dh = task.time - self.lastTime
-            dh *= 2
-            self.lastTime = task.time
-            self.jumpHeight += dh
-            if self.jumpHeight >= 1.0:
-                self.move(0.0, 0.0, -dh)
-            else:
-                self.move(0.0, 0.0, dh)
-            return task.cont
-        self.jumping = False
-        return task.done
+        self.world.getPlayer().jump()
 
     '''Obraca kamerę.'''
     def rotate(self, dangle):
         self.angle += dangle
         camera = self.game.camera
-        camera.lookAt(sin(self.angle) + camera.getX(), cos(self.angle) + camera.getY(), 0)
+        camera.lookAt(sin(self.angle) + camera.getX(), cos(self.angle) + camera.getY(), self.world.getPlayer().getModel().getPos().getZ())
+        
+    #TODO: umożliwić poruszanie kamerą w płaszczyźnie YZ
+    def rotateVertically(self, dangle):
+        pass
     
     '''Przesuwa kamerę.'''
-    #TODO: detekcja kolizji kamery z otoczeniem
     def move(self, deltaAngle):
         self.world.getCamera().setX(self.world.getCamera().getX() + 0.1 * sin(self.angle + deltaAngle))
         self.world.getCamera().setY(self.world.getCamera().getY() + 0.1 * cos(self.angle + deltaAngle))
         self.world.getSphereObjectDictionary()["CollisionHull1_"].setLastPosition(Point3(self.game.pb.getPos().getX(), self.game.pb.getPos().getY(), self.game.pb.getPos().getZ()))
-        
-        #self.world.getSphereObjectDictionary()['CollisionHull2_camera'].cs.setCenter(self.world.getCamera().getPos())
-        #print "setoo"
-        
-        
-        #self.game.pb.setX(self.game.pb.getX() - 0.2)
-        

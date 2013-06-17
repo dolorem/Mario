@@ -12,6 +12,28 @@ class Player(MyObject):
         self.jumpVelocity = jumpVelocity
         self.jumpHeight = jumpHeight
         self.points = points
+        self.jumpTime = 0
+        self.amountOfJumps = 0
+        
+    '''Metoda wywoływana po naciśnięciu spacji.'''
+    def jump(self):
+        if self.amountOfJumps >= 2:
+            return
+        self.amountOfJumps += 1
+        self.jumpTime = 0
+        taskMgr.add(self.jumpTask, "jump")
+        
+    '''Zadanie ruszające gracza do góry.''' 
+    def jumpTask(self, task):
+        print "jumping"
+        self.getModel().setZ(self.getModel().getZ() + 0.2)
+        self.jumpTime += 1
+        if (self.jumpTime > 10):
+            self.jumpTime = 0
+            #self.amountOfJumps = 0
+            return task.done
+        return task.cont        
+        
         
     '''Zwraca długość, szerokość, wysokość i środek obiektu jako krotkę.'''
     def calculateDimension(self):

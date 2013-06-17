@@ -21,10 +21,10 @@ class CollisionDetection():
 		
 	def gravity(self, task):
 		found = False
-		player = self.world.getPlayer()
 		for item in self.taskEvents:
 			if (isinstance(item[0], Player) and item[1].isColliding(item[0])) or (isinstance(item[1], Player) and item[1].isColliding(item[0])):
 				found = True
+				self.world.getPlayer().amountOfJumps = 0
 				break
 		if not found:
 			pos = self.world.getPlayer().getModel().getPos()
