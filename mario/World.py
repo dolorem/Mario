@@ -1,5 +1,7 @@
 #coding: utf-8
 from Player import Player
+import time
+import sys
 
 class World:
     def __init__(self, models = [], objects = [], sphereObjectDictionary = {}, player = None, camera = None):
@@ -9,6 +11,16 @@ class World:
         # wymagane do odwzorowań pomiędzy sferą kolidującą a obiektem w nią wpisanym
         self.player = player
         self.camera= camera
+ 
+    def end(self):
+        f = open("results", "a")
+        f.write(self.username + " " + str(self.getTime()) + " " + str(self.getPlayer().deaths) + "\n")
+        print self.username + " " + str(self.getTime()) + " " + str(self.getPlayer().deaths) + "\n"
+        f.close()
+        sys.exit()
+        
+    def getTime(self):
+        return time.time() - self.time            
         
     def addAnimated(self, value):
         self.animated.append(value)

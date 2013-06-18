@@ -1,3 +1,4 @@
+#coding:utf-8
 from CollisionDetection import CollisionDetection
 from UserInput import UserInput
 from direct.actor.Actor import Actor
@@ -7,9 +8,10 @@ from MyObject import MyObject
 from World import World
 from Player import Player
 from direct.interval.IntervalGlobal import Sequence
+import time
 
 class MyApp(ShowBase):
-    def __init__(self):
+    def __init__(self, username, time):
         ShowBase.__init__(self)
         self.intervals = 0
         root = render.attachNewNode("Root")
@@ -49,6 +51,8 @@ class MyApp(ShowBase):
         world.theme.play()
         world.theme.setLoop(True)
         world.death = loader.loadSfx("./sounds/death.mp3")
+        world.username = username
+        world.time = time
         
     def loadMap(self, mapName):
         objects = []
@@ -103,6 +107,7 @@ class MyApp(ShowBase):
             objects.append(obj)
         return objects
         
-        
-app = MyApp()
+time = time.time()
+username = raw_input("Podaj nazwę użytkownika.\n") 
+app = MyApp(username, time)
 app.run()

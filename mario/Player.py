@@ -14,12 +14,14 @@ class Player(MyObject):
         self.points = points
         self.jumpTime = 0
         self.amountOfJumps = 0
+        self.deaths = 0
         
     def kill(self):
         self.getModel().setPos(0, 0, 0)
         self.lastPosition = Point3(0, 0, 0)
         self.position = self.lastPosition
         self.lifes -= 1
+        self.deaths += 1
         print "KILLED"
         
     '''Metoda wywoływana po naciśnięciu spacji.'''

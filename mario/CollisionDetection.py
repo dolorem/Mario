@@ -10,6 +10,7 @@ from panda3d.core import VBase4
 from panda3d.core import SocketStream, GeomVertexReader
 from sys import stdout
 from Player import Player
+import sys
 
 class CollisionDetection():
 	def __init__(self, world):
@@ -123,9 +124,19 @@ class CollisionDetection():
 		print collEntry
 		first, second = self.world.getObjectsFromCollisionEntry(collEntry)
 		self.removeCollidingObjects(first, second)
+		
+	def isEnd(self):
+		p = self.world.getPlayer().getModel().getPos()
+		print p
+		return p.x >= 28.0 and p.x <= 32.0 and p.y >= 28.0 and p.y <= 32.0 and p.z >= 6.0 and p.z <= 10.0 
+			
 			
 	'''Cofa obiekt do poprzedniego położenia.'''
 	def revertPosition(self, foo):
+		if (self.world.getSphereObjectDictionary()['CollisionHull11_'] == foo):
+		#if (self.isEnd()):
+			print "ENDING"
+			self.world.end()
 		model = foo.getModel()
 		model.setX(foo.getLastPosition().getX())
 		model.setY(foo.getLastPosition().getY())
