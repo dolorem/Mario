@@ -45,6 +45,10 @@ class MyApp(ShowBase):
         pp = Sequence(p1, p2, name="pp")
         pp.loop()'''
         self.collisionDetection.prepareCollisionSpheres(gameObjects, self)
+        world.theme = loader.loadSfx("./sounds/theme.mp3")
+        world.theme.play()
+        world.theme.setLoop(True)
+        world.death = loader.loadSfx("./sounds/death.mp3")
         
     def loadMap(self, mapName):
         objects = []

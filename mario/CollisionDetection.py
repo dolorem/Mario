@@ -137,6 +137,7 @@ class CollisionDetection():
 		if obj1.isColliding(obj2):
 			#print "REVERTING"
 			if isinstance(obj1, Player) and obj2.getAnimated():
+				self.world.death.play()
 				self.world.getPlayer().kill()
 			self.revertPosition(obj1)
 			self.revertPosition(obj2)
