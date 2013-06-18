@@ -75,6 +75,6 @@ class UserInput:
     
     '''Przesuwa kamerę.'''
     def move(self, deltaAngle):
-        self.world.getCamera().setX(self.world.getCamera().getX() + 0.1 * sin(self.angle + deltaAngle))
-        self.world.getCamera().setY(self.world.getCamera().getY() + 0.1 * cos(self.angle + deltaAngle))
+        self.world.getCamera().setX(self.world.getCamera().getX() + 1 * sin(self.angle + deltaAngle))
+        self.world.getCamera().setY(self.world.getCamera().getY() + 1 * cos(self.angle + deltaAngle))
         #self.world.getSphereObjectDictionary()["CollisionHull1_"].setLastPosition(Point3(self.game.pb.getPos().getX(), self.game.pb.getPos().getY(), self.game.pb.getPos().getZ()))

@@ -1,2 +1,11 @@
+wall1 0 40 0 -1
+wall2 0 0 40 -1
+wall1 0 -40 0 -1
+wall2 0 0 -40 -1
+platform1 0 10 10 0
+platform1 0 10 30 3
+platform1 0 10 0 8
+snake 1 9 -1 8.5 1 1
 infinity 0 0 0 -2 
 snake 1 0 20 -1 10 10
+platform1 0 30 30 8

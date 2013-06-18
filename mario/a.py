@@ -76,6 +76,7 @@ class MyApp(ShowBase):
                 print obj.getMaxY()
                 time = 1
                 rotationTime = 2
+                print "Z=" + str(obj.getModel().getZ())
                 obj.getModel().setPos(Point3(obj.getModel().getX(), obj.getModel().getY(), obj.getModel().getZ()))
                 #p0 = Point3(obj.getModel().getX(), obj.getModel().getY(), obj.getModel().getZ())
                 p1 = Point3(obj.getMinX(), obj.getMinY(), obj.getModel().getZ())

@@ -34,7 +34,7 @@ class Player(MyObject):
     def jumpTask(self, task):
         self.getModel().setZ(self.getModel().getZ() + 0.2)
         self.jumpTime += 1
-        if (self.jumpTime > 10):
+        if (self.jumpTime > 30):
             self.jumpTime = 0
             #self.amountOfJumps = 0
             return task.done

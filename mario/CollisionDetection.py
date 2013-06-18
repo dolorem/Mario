@@ -135,11 +135,13 @@ class CollisionDetection():
 	def verifyCollision(self, collisionEvent):
 		obj1, obj2 = collisionEvent[0], collisionEvent[1]
 		if obj1.isColliding(obj2):
+			#print "REVERTING"
 			if isinstance(obj1, Player) and obj2.getAnimated():
 				self.world.getPlayer().kill()
 			self.revertPosition(obj1)
 			self.revertPosition(obj2)
 		elif isinstance(obj1, Player) or isinstance(obj2, Player):
+			#print "REVERTING"
 			if isinstance(obj1, Player) and obj2.getAnimated():
 				self.world.getPlayer().kill()
 			self.revertPosition(obj1)
