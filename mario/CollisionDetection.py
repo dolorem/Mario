@@ -56,19 +56,12 @@ class CollisionDetection():
 			self.verifyPlayerWorldCollision(object)
 			
 	def verifyPlayerWorldCollision(self, object):
-		#if object.isCollidingWithCamera(self.world.getCamera(), 4, 4, 4):
-		#	print "COLLIDING"
-		#	self.revertPosition(object)
-		#	self.world.getPlayer().reversePosition(self.world.getCamera(), object)
 		pass
 	
 	'''Inicjuje sferę otaczającą dla obiektu.'''
 	def initCollisionSphere(self, obj, show=False, myObject=None):
 		try:
 			show = False
-			#if self.collCount == 2:
-			#	show = True
-			print obj.getName()
 			bounds = obj.getChild(0).getBounds()
 			center = bounds.getCenter()
 			radius = bounds.getRadius()
@@ -88,7 +81,6 @@ class CollisionDetection():
 			cNode = CollisionNode(collSphereStr)
 			cs = CollisionSphere(center, radius)
 			myObject.cs = cs
-			#print cs
 			cNode.addSolid(cs)
 			cNodepath = obj.attachNewNode(cNode)
 			if show:
@@ -105,37 +97,29 @@ class CollisionDetection():
 		self.collCount = 0
 		for myObject in gameObjects:
 			sColl = self.initCollisionSphere(myObject.getModel(), True, myObject)
-			#print sColl 
 			self.world.getSphereObjectDictionary()[sColl[1]] = myObject
 			base.cTrav.addCollider(sColl[0], self.collHandEvent)
 			game.accept('into-' + sColl[1], self.collideIn)
 			game.accept('outof-' + sColl[1], self.collideOut)
-		#print self.world.getSphereObjectDictionary()
 	
 	'''Wywoływane przez Pandę gdy obiekty zaczną kolidować, dodaje je do listy obiektów do sprawdzenia i ewentualnego przywrócenia.'''
 	def collideIn(self, collEntry):
-		print collEntry
 		first, second = self.world.getObjectsFromCollisionEntry(collEntry)
 		self.addCollidingObjects(first, second)
 
 	'''Wywoływane przez Pandę gdy obiekty przestaną kolidować, usuwa je z listy obiektów do sprawdzenia i ewentualnego przywrócenia.'''
 	def collideOut(self, collEntry):
-		print "OUT"
-		print collEntry
 		first, second = self.world.getObjectsFromCollisionEntry(collEntry)
 		self.removeCollidingObjects(first, second)
 		
 	def isEnd(self):
 		p = self.world.getPlayer().getModel().getPos()
-		print p
 		return p.x >= 28.0 and p.x <= 32.0 and p.y >= 28.0 and p.y <= 32.0 and p.z >= 6.0 and p.z <= 10.0 
 			
 			
 	'''Cofa obiekt do poprzedniego położenia.'''
 	def revertPosition(self, foo):
 		if (self.world.getSphereObjectDictionary()['CollisionHull11_'] == foo):
-		#if (self.isEnd()):
-			print "ENDING"
 			self.world.end()
 		model = foo.getModel()
 		model.setX(foo.getLastPosition().getX())
@@ -146,14 +130,12 @@ class CollisionDetection():
 	def verifyCollision(self, collisionEvent):
 		obj1, obj2 = collisionEvent[0], collisionEvent[1]
 		if obj1.isColliding(obj2):
-			#print "REVERTING"
 			if isinstance(obj1, Player) and obj2.getAnimated():
 				self.world.death.play()
 				self.world.getPlayer().kill()
 			self.revertPosition(obj1)
 			self.revertPosition(obj2)
 		elif isinstance(obj1, Player) or isinstance(obj2, Player):
-			#print "REVERTING"
 			if isinstance(obj1, Player) and obj2.getAnimated():
 				self.world.getPlayer().kill()
 			self.revertPosition(obj1)

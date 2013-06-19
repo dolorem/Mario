@@ -22,7 +22,7 @@ class Player(MyObject):
         self.position = self.lastPosition
         self.lifes -= 1
         self.deaths += 1
-        print "KILLED"
+        print "Śmierć."
         
     '''Metoda wywoływana po naciśnięciu spacji.'''
     def jump(self):
@@ -38,7 +38,6 @@ class Player(MyObject):
         self.jumpTime += 1
         if (self.jumpTime > 30):
             self.jumpTime = 0
-            #self.amountOfJumps = 0
             return task.done
         return task.cont        
         

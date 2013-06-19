@@ -32,8 +32,6 @@ class World:
         self.camera = camera
     
     def getPlayer(self):
-        #return self.player
-        #return self.getSphereObjectDictionary()['CollisionHull2_camera']
         return self.getSphereObjectDictionary()['CollisionHull0_camera']
     
     def setPlayer(self, player):
